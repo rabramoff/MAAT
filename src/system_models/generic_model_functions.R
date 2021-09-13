@@ -160,22 +160,18 @@ init_state <- function(.) {
 }
 
 
+calc_steadystate <- function(.) {
+  # met data assignment
+  .$configure_met(df=.$dataf$met_mean[,1])
+  .$fns$steadystate()  
+}
+
+
 # this currently works both when called from unit testing and from the wrapper 
 # - not 100 % sure why as when called from the wrapper .$dataf should read .super$dataf
 # - maybe a result of being called from the wrapper 
 #   and maybe . represents the object within which the function is called rather than to which it belongs
-run_met <- function(.,l) {
-
-  # initialize: pool structure etc
-  if(!is.null(.$init)) .$init()
-  
-  # run over an input/meteorological dataset 
-  t(vapply(1:.$dataf$lm, .$run_met1, .$dataf$mout )) 
-}
-
-
-run_met <- function(.,l) {
-#run_met_steadystate_factorial<- function(.,l) {
+run_met_basic <- function(.,l) {
 
   #print('')
   #print(.$fnames$decomp)
@@ -187,40 +183,22 @@ run_met <- function(.,l) {
   # initialize: pool structure etc
   if(!is.null(.$init)) .$init()
   
-  # call steady state system model if it exists and doesn't return a null value
-  # APW Matt: this is the additional function call to initialise the model at steady state
-  #           if you want to turn this off just set the fnames$steadystate value to f_steadystate_null (a dummy function that just returns NULL)
-  #if(!is.null(.$fns$steadystate)) if(!is.null(.$fns$steadystate() )) .$fns$steadystate()  
-  if(.$wpars$init_steadystate) {
-    if(!is.null(.$fns$steadystate)) {
+  # run over an input/meteorological dataset 
+  t(vapply(1:.$dataf$lm, .$run_met2, .$dataf$mout )) 
+}
 
-      # calculate mean of met dataset 
-      #metdf_mean <- as.matrix(apply(.$dataf$met, 1, mean ))
-      #print(metdf_mean)
-      #print(as.matrix(metdf_mean))
-      #print(.$dataf$met)
-      print('')
 
-      # met data assignment
-      .$configure_met(df=.$dataf$met_mean[,1])
-
-      .$fns$steadystate()  
-
-    } else {
-      stop('Steadystate initialisation requested but no steadystate function exists in model object.')
-    }
-  }
+run_met_steadystate_add <- function(.,l) {
 
   # run over an input/meteorological dataset 
-  #t(vapply(1:.$dataf$lm, .$run_met1, .$dataf$mout )) 
-  out <- t(vapply(1:.$dataf$lm, .$run_met1, .$dataf$mout )) 
+  out <- .$run_met1() 
 
-  # if factorial add time 0 steady state values to ouput  
+  # add time 0 steady state values to ouput  
   rbind(.$state_pars$solver_steadystate_out$y, out )
 }
 
 
-run_met1 <- function(.,l) {
+run_met2 <- function(.,l) {
   # assumes that each row of the dataframe are sequential
   # allows the system state at t-1 to affect the system state at time t if necessary (therefore mclapply cannot be used)
   # typically used to run the model using data collected at a specific site and to compare against observations

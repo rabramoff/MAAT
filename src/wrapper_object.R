@@ -66,6 +66,19 @@ wrapper_object$build <- function(., ... ) {
   .$model$build(...)
   rm(mod_obj)
   setwd('../..')
+
+  # configure model functions to allow steadystate initialisation when a met dataset is present
+  if(.$wpars$init_steadystate) {
+    if(!is.null(.$model$fns$steadystate)) {
+    
+      .$init <- paste0(.$model$name,'_',init_steadystate)  
+      if(.$wpars$runtype=='factorial') { 
+        .$model$run_met  <- run_met_steadystate_add
+        .$model$run_met1 <- run_met_basic
+      }    
+    } else {
+      stop('Steadystate initialisation requested but no steadystate function exists in model object.')
+  }    
 }
 
 # clean function to reset object

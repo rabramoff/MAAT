@@ -53,10 +53,19 @@ soil_decomp_object$configure_unique <- function(., init=F, flist=NULL ) {
 
 soil_decomp_object$init1 <- init_state
 
-soil_decomp_object$init  <- function(.) {
+soil_decomp_init  <- function(.) {
   .$init1()
   .$state$cpools = matrix(unlist(.$pars$cstate0)[1:.$pars$n_pools], ncol=1 )
 }
+
+soil_decomp_init_steadystate  <- function(.) {
+  .$init1()
+  .$state$cpools = matrix(unlist(.$pars$cstate0)[1:.$pars$n_pools], ncol=1 )
+
+  .$calc_steadystate()
+}
+
+soil_decomp_object$init  <- soil_decomp_init 
 
 
 
@@ -73,16 +82,16 @@ soil_decomp_object$fnames <- list(
   input              = 'f_input_mimics',
   DotO               = 'f_DotO',
   transfermatrix     = 'f_transfermatrix',
-  steadystate        = 'f_steadystate_npools',#'f_steadystate_npools',
+  steadystate        = 'f_steadystate_npools',    # 'f_steadystate_npools',
   solver_steadystate = 'pstode',
   
   # decay/decomposition functions
-  decomp = list(
-    d1 = 'f_decomp_rmm_wieder', #reverse michaelis menten (function accounts for two potential catalyst pools)
+  decomp = list(                    
+    d1 = 'f_decomp_rmm_wieder',     # reverse michaelis menten (function accounts for two potential catalyst pools)
     d2 = 'f_decomp_rmm_wieder', 
-    d3 = 'f_decomp_lin', #linear turnover of r-selected microbial biomass 
-    d4 = 'f_decomp_lin', #linear turnover of k-selected microbial biomass
-    d5 = 'f_zero',  #no decomp, just desorption
+    d3 = 'f_decomp_lin',            # linear turnover of r-selected microbial biomass 
+    d4 = 'f_decomp_lin',            # linear turnover of k-selected microbial biomass
+    d5 = 'f_zero',                  # no decomp, just desorption
     d6 = 'f_decomp_rmm_wieder',
     d7 = 'f_decomp_rmm_wieder'
   ),
@@ -413,68 +422,60 @@ f_output_soil_decomp_full <- function(.) {
 # test functions
 #######################################################################        
 
-soil_decomp_object$.test <- function(., verbose=F, metdf=F, litter=172/365, ntimes=100 ) {
+# APW: a generic initialiasation function for unit test functions
+#      can be made generic across model objects if liiter (i.e. met data) object is made generic, probably a list
+soil_decomp_object$.test_init <- function(., verbose=F, metdf=F, litter=10, ntimes=1, iss=F ) {
 
-  if(verbose) str(.)
-  .$build(switches=c(F,verbose,F))
-  .$configure_test() # if only used in test functions should begin with a .
-
-  if(metdf) {
-    .$dataf       <- list()
-    if(length(litter)==1) litter <- rep(litter, ntimes ) 
-    .$dataf$metdf <- matrix(litter, nrow=1 )
-    rownames(.$dataf$metdf) <- 'soil_decomp.litter'  
-    .$dataf$lm    <- dim(.$dataf$met)[2]
-    .$dataf$mout  <- .$output()
-    .$run_met()
-  } else {
-    .$env$litter  <- litter
-    .$run()
-  }
-}
-
-soil_decomp_object$.test.ss <- function(., verbose=F, metdf=F, litter=172/365, ntimes=100 ) {
-  
   if(verbose) str(.)
   .$build(switches=c(F,verbose,F))
   .$configure_test() # if only used in test functions should begin with a .
   
   if(metdf) {
+    # initialise objects that live in the wrapper
     .$dataf       <- list()
     .$wpars       <- list()
-    if(length(litter)==1) litter <- rep(litter, ntimes ) 
-    .$dataf$metdf <- matrix(litter, nrow=1 )
-    rownames(.$dataf$metdf) <- 'soil_decomp.litter'  
-    .$dataf$lm    <- dim(.$dataf$met)[2]
     .$dataf$mout  <- .$output()
-    .$wpars$init_steadystate <- T 
-    .$run_met()
+    .$wpars$init_steadystate <- iss 
+
+    # create met data
+    litter      <- rep(litter, ntimes ) 
+    .$dataf$met <- matrix(litter, nrow=1 )
+    rownames(.$dataf$met) <- 'soil_decomp.litter'  
+    .$dataf$lm  <- dim(.$dataf$met)[2]
+
+    # other stuff
+    if(.$wpars$init_steadystate) {
+      if(is.null(.$fns$steadystate)) stop('Steadystate initialisation requested but no steadystate function exists in model object.') 
+
+      .$init     <- soil_decomp_init_steadystate
+      .$run_met  <- run_met_steadystate_add
+      .$run_met1 <- run_met_basic
+      .$dataf$met_mean <- as.matrix(apply(.$dataf$met, 1, mean ))
+    } else {
+
+      .$init     <- soil_decomp_init
+      .$run_met  <- run_met_basic
+    }
+ 
+  # metdf if  
   } else {
-    .$env$litter  <- litter
-    .$run()
+  
+    .$env$litter  <- litter[1]
   }
 }
 
-soil_decomp_object$.test_corpse <- function(., verbose=F, metdf=F, litter=.001369863, ntimes=100 ) {
-  
-  if(verbose) str(.)
-  .$build(switches=c(F,verbose,F))
-  .$configure_test() # if only used in test functions should begin with a .
 
-  
+soil_decomp_object$.test <- function(., metdf=F, ... ) {
+
+  .$.test_init(metdf=metdf, ... )
+
   if(metdf) {
-    .$dataf       <- list()
-    if(length(litter)==1) litter <- rep(litter, ntimes )   
-    .$dataf$metdf <- matrix(litter, nrow=1 )
-    rownames(.$dataf$metdf) <- 'soil_decomp.litter'  
-    .$dataf$lm    <- length(.$dataf$metdf[1,])
-    .$dataf$mout  <- .$output()
     .$run_met()
   } else {
-    .$env$litter  <- litter
     .$run()
   }
 }
+
 
 # soil_decomp_object$.test_changepool <- function(., verbose=F, metdf=F, litter=.00016, ntimes=100, n_pool=3) {
 #   

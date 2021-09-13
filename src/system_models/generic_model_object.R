@@ -116,8 +116,9 @@ system_model_object <-
 
     # run model over a meteorological (or boundary condition) dataset
     init              <- NULL
-    run_met           <- run_met 
-    run_met1          <- run_met1 
+    run_met           <- run_met_basic 
+    run_met1          <- NULL 
+    run_met2          <- run_met2 
     
     # configure env from met dataset 
     configure_met     <- configure_met 

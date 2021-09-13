@@ -24,9 +24,18 @@ soil_decomp_object$state_pars
 soil_decomp_object$pars
 soil_decomp_object$env
 soil_decomp_object$run
+names(soil_decomp_object$fns)
 
-names(soil_decomp_object)
-soil_decomp_object$.test.ss(metdf=T)
+source('soil_decomp_object.R')
+soil_decomp_object$.test(metdf=T)
+soil_decomp_object$.test(metdf=T, litter=c(10,89,54), ntimes=1 )
+soil_decomp_object$.test(metdf=T, litter=c(10,89,54), ntimes=1, iss=T )
+soil_decomp_object$.test(metdf=T, litter=c(10,89,54), ntimes=10 )
+soil_decomp_object$.test(metdf=T, litter=c(10,89,54), ntimes=10, iss=T )
+
+soil_decomp_object$run_met
+soil_decomp_object$run_met1
+soil_decomp_object$dataf$met
 soil_decomp_object$state_pars$solver_steadystate_out
 soil_decomp_object$state_pars$solver_steadystate_out$y
 soil_decomp_object$.test(metdf=T, ntimes=10 )
@@ -55,15 +64,15 @@ soil_decomp_object$fns$transfermatrix(C=soil_decomp_object$state$cpools)
 soil_decomp_object$fns$DotO
 soil_decomp_object$fns$DotO(soil_decomp_object$state$cpools[,1])
 
-source('soil_decomp_object.R')
-soil_decomp_object$.test_changepool()
+# source('soil_decomp_object.R')
+# soil_decomp_object$.test_changepool()
 
-source('soil_decomp_object.R')
-system.time(olist <- soil_decomp_object$.test_3pool(ntimes=2))
-system.time(olist <- soil_decomp_object$.test_3pool(ntimes=365))
-system.time(olist <- soil_decomp_object$.test_3pool(ntimes=3650))
-system.time(olist <- soil_decomp_object$.test_3pool())
-olist
+# source('soil_decomp_object.R')
+# system.time(olist <- soil_decomp_object$.test_3pool(ntimes=2))
+# system.time(olist <- soil_decomp_object$.test_3pool(ntimes=365))
+# system.time(olist <- soil_decomp_object$.test_3pool(ntimes=3650))
+# system.time(olist <- soil_decomp_object$.test_3pool())
+# olist
 
 source('soil_decomp_object.R')
 #default MM (vmax1 = 88, vmax3 = 171, km1 = 144, km3 = 936) from MIMICS
