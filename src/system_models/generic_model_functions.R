@@ -195,14 +195,14 @@ run_met <- function(.,l) {
     if(!is.null(.$fns$steadystate)) {
 
       # calculate mean of met dataset 
-      metdf_mean <- as.matrix(apply(.$dataf$met, 1, mean ))
+      #metdf_mean <- as.matrix(apply(.$dataf$met, 1, mean ))
       #print(metdf_mean)
       #print(as.matrix(metdf_mean))
       #print(.$dataf$met)
       print('')
 
       # met data assignment
-      .$configure_met(df=metdf_mean[,1])
+      .$configure_met(df=.$dataf$met_mean[,1])
 
       .$fns$steadystate()  
 

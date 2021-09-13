@@ -544,13 +544,6 @@ if(!mcmc_restart & !is.null(metdata)) {
     print(metdata, quote=F )
     metdffull <- read.csv(metdata,strip.white=T)
     print(head(metdffull), quote=F )
-    # ALJ: if doing a Sphagnum simulation
-    #      screen out night-time values from met data file
-    #      subset it to remove 0's and negative values
-    # APW: thinking of a flexible way to do this, it's not that easy. Long term might need to do this in the met data itself
-    # sub_idx   <- which(metdffull$EM_PAR_8100_x > 0)
-    # metdffull <- metdffull[sub_idx, ]
-    #print(head(metdffull), quote=F )
 
     # order met data in metfile according to that specified in the <mod_obj>_user_met.XML
     # - need to add a trap to catch met data files that do not contain all the data specified in <mod_obj>_user_met.XML
@@ -576,12 +569,37 @@ if(!mcmc_restart & !is.null(metdata)) {
       names(metdf) <- paste(mod_obj,names(met_trans),sep='.')
     }
 
+    # screen unwanted parts of the metdata, e.g. nighttime values
+    # ALJ: if doing a Sphagnum simulation
+    #      screen out night-time values from met data file
+    #      subset it to remove 0's and negative values
+    # APW: thinking of a flexible way to do this, it's not that easy. Long term might need to do this in the met data itself
+    # APW: can be done by specifying a variable name, i.e. par, and function, e.g. remove_0s  
+    # sub_idx   <- which(metdf$EM_PAR_8100_x > 0)
+    # metdf <- metdf[sub_idx, ]
+    #print(head(metdf), quote=F )
+
     # add to MAAT object
     print(head(metdf), quote=F )
     maat$dataf$met <- t(as.matrix(metdf))
 
+    # add met data mean if init_steadystate
+    if(.$wpars$init_steadystate) {
+      metdf_mean <- apply(metdf, 2, mean )
+      
+      # assign value to time variable, t1 - 1 or t0 
+      if('time'%in%names(metdf_mean)) {
+        if(is.numeric(metdf_mean['time'])) { # APW: time should be numeric otherwise this won't be a matrix 
+          metdf_mean['time'] <- 2*metdf[1,'time'] - metdf[2,'time']  
+        } else {
+          metdf_mean['time'] <- 't0'
+      }
+    }
+    print(head(metdf_mean), quote=F )
+    maat$dataf$met_mean <- as.matrix(metdf_mean)
+
     # remove met data file
-    rm(metdf)
+    rm(metdf); rm(metdf_mean)
     if(is.null(evaldata)) rm(metdffull) else if(evaldata!='metdata') rm(metdffull)
 
   } else {

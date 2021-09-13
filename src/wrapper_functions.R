@@ -940,7 +940,7 @@ write_output_mcmc <- function(.,i) {
 output_factorial  <- function(.) {
 
   # add t0 mean met data when calculating steadystate for init
-  #if(.$wpars$init_steadystate) .$dataf$met <- cbind(.$dataf$met_mean, .$dataf$met )
+  if(.$wpars$init_steadystate) .$dataf$met <- cbind(.$dataf$met_mean, .$dataf$met )
 
   return(
 

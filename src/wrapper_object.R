@@ -249,21 +249,22 @@ wrapper_object$dynamic <- list(
 # with an associated length for input matrices
 wrapper_object$dataf  <- list(
   # variables matrices - created during runtime
-  fnames  = NULL,
-  fnamesB = NULL,
-  pars    = NULL,
-  parsB   = NULL,
-  env     = NULL,
-  met     = NULL,         # a dataframe of sequential meteorological driving data, for running the analysis at a particular site for example
+  fnames    = NULL,
+  fnamesB   = NULL,
+  pars      = NULL,
+  parsB     = NULL,
+  env       = NULL,
+  met       = NULL,         # a matrix of sequential meteorological driving data, for running the analysis at a particular site for example
+  met_mean  = NULL,         # a single column matrix of mean meteorological driving data for steadystate calculation 
   # row length of above matrices
-  lf      = NULL,
-  lfA     = NULL,
-  lfB     = NULL,
-  lp      = NULL,
-  lpB     = NULL,
-  lps     = NULL,         # number of usable columns in MCMC past_states matrix
-  le      = NULL,
-  lm      = NULL,
+  lf        = NULL,
+  lfA       = NULL,
+  lfB       = NULL,
+  lp        = NULL,
+  lpB       = NULL,
+  lps       = NULL,         # number of usable columns in MCMC past_states matrix
+  le        = NULL,
+  lm        = NULL,
   # output matrices / arrays
   mcmc_input   = NULL,    # list of output matrices and arrays from a previous MCMC run
   mout         = NULL,    # example model output vector, for setting up vapply functions
