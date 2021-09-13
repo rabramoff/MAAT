@@ -178,12 +178,18 @@ generate_ensemble_pars_mcmc <- function(.) {
 # initialise output matrix/array
 # - these functions initialise the output matrices used to store output from the ensemble
 
+# factorial differs from SApar_saltelli only in allowing a t0 for steadystate values 
 init_output_matrix_factorial <- function(.) {
-  .$dataf$out <- matrix(0, .$dataf$lm*.$dataf$le*.$dataf$lp*.$dataf$lf, length(.$dataf$mout) )
+  lm <- if(.$wpars$init_steadystate) .$dataf$lm + 1 else .$dataf$lm
+  .$dataf$out <- matrix(0, lm*.$dataf$le*.$dataf$lp*.$dataf$lf, length(.$dataf$mout) )
   colnames(.$dataf$out) <- names(.$dataf$mout)
 }
 
-init_output_matrix_SApar_saltelli <- init_output_matrix_factorial
+
+init_output_matrix_SApar_saltelli <-  function(.) {
+  .$dataf$out <- matrix(0, .$dataf$lm*.$dataf$le*.$dataf$lp*.$dataf$lf, length(.$dataf$mout) )
+  colnames(.$dataf$out) <- names(.$dataf$mout)
+}
 
 
 init_output_matrix_SApar_saltelli_ABi <- function(.) {
@@ -931,9 +937,13 @@ write_output_mcmc <- function(.,i) {
 # generate output
 
 # function that combines the "vars", "met", and "out" dataframes correctly for output in a factorial simulation
-# - not sure how much this is actually used, seems to be just for a factorial run these days
-output_factorial  <- function(.){
+output_factorial  <- function(.) {
+
+  # add t0 mean met data when calculating steadystate for init
+  #if(.$wpars$init_steadystate) .$dataf$met <- cbind(.$dataf$met_mean, .$dataf$met )
+
   return(
+
     # if at least one of fnames, pars, and env are varied
     if(is.null(.$dataf$env)+is.null(.$dataf$pars)+is.null(.$dataf$fnames) < 3) {
 
@@ -960,8 +970,8 @@ output_factorial  <- function(.){
         }
 
       # if met data
-      # - so far will only work for factorial simulations
       } else {
+
         odf <- cbind(do.call(rbind, lapply(1:length(vardf[,1]), .$combine, df=vardf )), .$dataf$out )
         if(dim(vardf)[2]==1) names(odf)[which(names(odf)=='df.i...')] <- names(vardf)
         rm(vardf)
@@ -971,6 +981,7 @@ output_factorial  <- function(.){
 
     # if no vars
     } else {
+      
       # if met data
       if(!is.null(.$dataf$met)) cbind(t(.$dataf$met), .$dataf$out ) else .$dataf$out
     }

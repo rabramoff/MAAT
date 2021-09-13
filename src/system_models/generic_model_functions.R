@@ -162,8 +162,20 @@ init_state <- function(.) {
 
 # this currently works both when called from unit testing and from the wrapper 
 # - not 100 % sure why as when called from the wrapper .$dataf should read .super$dataf
-# - maybe a result of being called from the wrapper and maybe . represents the object within which the function is called rather than to which it belongs
+# - maybe a result of being called from the wrapper 
+#   and maybe . represents the object within which the function is called rather than to which it belongs
 run_met <- function(.,l) {
+
+  # initialize: pool structure etc
+  if(!is.null(.$init)) .$init()
+  
+  # run over an input/meteorological dataset 
+  t(vapply(1:.$dataf$lm, .$run_met1, .$dataf$mout )) 
+}
+
+
+run_met <- function(.,l) {
+#run_met_steadystate_factorial<- function(.,l) {
 
   #print('')
   #print(.$fnames$decomp)
@@ -178,10 +190,33 @@ run_met <- function(.,l) {
   # call steady state system model if it exists and doesn't return a null value
   # APW Matt: this is the additional function call to initialise the model at steady state
   #           if you want to turn this off just set the fnames$steadystate value to f_steadystate_null (a dummy function that just returns NULL)
-  if(!is.null(.$fns$steadystate)) if(!is.null(.$fns$steadystate() )) .$fns$steadystate()  
+  #if(!is.null(.$fns$steadystate)) if(!is.null(.$fns$steadystate() )) .$fns$steadystate()  
+  if(.$wpars$init_steadystate) {
+    if(!is.null(.$fns$steadystate)) {
+
+      # calculate mean of met dataset 
+      metdf_mean <- as.matrix(apply(.$dataf$met, 1, mean ))
+      #print(metdf_mean)
+      #print(as.matrix(metdf_mean))
+      #print(.$dataf$met)
+      print('')
+
+      # met data assignment
+      .$configure_met(df=metdf_mean[,1])
+
+      .$fns$steadystate()  
+
+    } else {
+      stop('Steadystate initialisation requested but no steadystate function exists in model object.')
+    }
+  }
 
   # run over an input/meteorological dataset 
-  t(vapply(1:.$dataf$lm, .$run_met1, .$dataf$mout )) 
+  #t(vapply(1:.$dataf$lm, .$run_met1, .$dataf$mout )) 
+  out <- t(vapply(1:.$dataf$lm, .$run_met1, .$dataf$mout )) 
+
+  # if factorial add time 0 steady state values to ouput  
+  rbind(.$state_pars$solver_steadystate_out$y, out )
 }
 
 

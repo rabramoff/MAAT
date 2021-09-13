@@ -441,11 +441,13 @@ soil_decomp_object$.test.ss <- function(., verbose=F, metdf=F, litter=172/365, n
   
   if(metdf) {
     .$dataf       <- list()
+    .$wpars       <- list()
     if(length(litter)==1) litter <- rep(litter, ntimes ) 
     .$dataf$metdf <- matrix(litter, nrow=1 )
     rownames(.$dataf$metdf) <- 'soil_decomp.litter'  
     .$dataf$lm    <- dim(.$dataf$met)[2]
     .$dataf$mout  <- .$output()
+    .$wpars$init_steadystate <- T 
     .$run_met()
   } else {
     .$env$litter  <- litter

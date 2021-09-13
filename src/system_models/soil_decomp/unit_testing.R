@@ -25,8 +25,8 @@ soil_decomp_object$pars
 soil_decomp_object$env
 soil_decomp_object$run
 
-
-soil_decomp_object$.test(metdf=T)
+names(soil_decomp_object)
+soil_decomp_object$.test.ss(metdf=T)
 soil_decomp_object$state_pars$solver_steadystate_out
 soil_decomp_object$state_pars$solver_steadystate_out$y
 soil_decomp_object$.test(metdf=T, ntimes=10 )

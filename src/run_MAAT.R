@@ -267,19 +267,20 @@ maat <- as.proto(wrapper_object$as.list())
 rm(wrapper_object)
 
 # define run parameters
-maat$wpars$mod_obj       <- mod_obj
-maat$wpars$runtype       <- runtype
-maat$wpars$UQ            <- uq
-maat$wpars$multic        <- multic
-maat$wpars$procs         <- procs
-maat$wpars$n             <- psa_n
-maat$wpars$coef_var      <- coef_var
-maat$wpars$nmult         <- salt_nmult
-maat$wpars$eval_strings  <- eval_strings
-maat$wpars$of_name_stem  <- ofname
-maat$wpars$of_type       <- of_format
-maat$wpars$of_dir        <- odir
-maat$wpars$parsinit_read <- !is.null(parsinit_mcmc)
+maat$wpars$mod_obj          <- mod_obj
+maat$wpars$runtype          <- runtype
+maat$wpars$init_steadystate <- init_steadystate
+maat$wpars$UQ               <- uq
+maat$wpars$multic           <- multic
+maat$wpars$procs            <- procs
+maat$wpars$n                <- psa_n
+maat$wpars$coef_var         <- coef_var
+maat$wpars$nmult            <- salt_nmult
+maat$wpars$eval_strings     <- eval_strings
+maat$wpars$of_name_stem     <- ofname
+maat$wpars$of_type          <- of_format
+maat$wpars$of_dir           <- odir
+maat$wpars$parsinit_read    <- !is.null(parsinit_mcmc)
 
 # define MCMC run parameters (sublist of wpars)
 # APW: if statement doesn't work for all MCMC functions as maat builds immediately after this before the restart can be read, fix 

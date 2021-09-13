@@ -21,7 +21,7 @@ f_steadystate_npools <- function(.) {
   .super$state$cpools[,1]                  <- .super$state_pars$solver_steadystate_out$y
 }
 
-f_steadystate_null   <- function(.) NULL 
+#f_steadystate_null   <- function(.) NULL 
 
 
 ### END ###

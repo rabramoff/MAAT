@@ -29,8 +29,7 @@ wrapper_object$model <- NULL
 wrapper_object$build <- function(., ... ) {
 
   # build wrapper
-  # - a set of if/else statements to initialise the wrapper functions with specific functions
-  # - could be built around get paste type setup based on runtype argument
+  # - initialise the wrapper functions with specific runtype etc functions
   .$generate_ensemble_pars <- get(paste0('generate_ensemble_pars_',.$wpars$runtype))
   .$init_output_matrix     <- get(paste0('init_output_matrix_',.$wpars$runtype))
   .$write_output           <- get(paste0('write_output_',.$wpars$runtype))
@@ -278,22 +277,23 @@ wrapper_object$dataf  <- list(
 
 # parameters specific to the wrapper object
 wrapper_object$wpars <- list(
-  multic          = F,             # multicore the simulation
-  procs           = 6,             # number of processors to use if multic = T
-  cverbose        = F,             # write configuration output during runtime
-  UQ              = F,             # run a UQ analysis
-  runtype         = 'none',        # ensemble type - 'factorial', 'SApar_saltelli', and 'SAprocess_ye' available so far
-  of_dir          = '~/tmp',       # output directory
-  of_type         = 'csv',         # output file type - 'csv' or 'rds'
-  of_name         = '',            # output file name - excluding file extension
-  of_name_history = '',            # history output file name - excluding file extension
-  of_name_stem    = 'MAAT_output', # output file name stem - all output file in an ensemble will begin with this
-  n               = numeric(1),    # parameter sample number
-  parsinit_read   = F,             # parameter samples have been read from a file
-  nmult           = 1,             # parameter sample number multiplier for saltelli method
-  eval_strings    = F,             # switch telling wrapper that vars$pars are to be evaluated from code string snippets in vars$pars_eval
-  sobol_init      = T,             # initialise sobol sequence or not when calling rsobol. This should not be modified by the user.
-  unit_testing    = F,
+  multic           = F,             # multicore the simulation
+  procs            = 6,             # number of processors to use if multic = T
+  cverbose         = F,             # write configuration output during runtime
+  UQ               = F,             # run a UQ analysis
+  runtype          = 'none',        # ensemble type - 'factorial', 'SApar_saltelli', and 'SAprocess_ye' available so far
+  init_steadystate = T,             # initialise models with pools at steady state
+  of_dir           = '~/tmp',       # output directory
+  of_type          = 'csv',         # output file type - 'csv' or 'rds'
+  of_name          = '',            # output file name - excluding file extension
+  of_name_history  = '',            # history output file name - excluding file extension
+  of_name_stem     = 'MAAT_output', # output file name stem - all output file in an ensemble will begin with this
+  n                = numeric(1),    # parameter sample number
+  parsinit_read    = F,             # parameter samples have been read from a file
+  nmult            = 1,             # parameter sample number multiplier for saltelli method
+  eval_strings     = F,             # switch telling wrapper that vars$pars are to be evaluated from code string snippets in vars$pars_eval
+  sobol_init       = T,             # initialise sobol sequence or not when calling rsobol. This should not be modified by the user.
+  unit_testing     = F,
 
   mcmc = list(
     mcmc_type       = 'dream',
