@@ -14,7 +14,7 @@
 # soil_decomp
 source('soil_decomp_object.R')
 soil_decomp_object$.test()
-soil_decomp_object$.test()
+soil_decomp_object$.test(litter=1.4)
 soil_decomp_object$.test(litter=6)
 soil_decomp_object$.test(verbose=T)
 
@@ -25,12 +25,14 @@ soil_decomp_object$pars
 soil_decomp_object$env
 soil_decomp_object$run
 
+
 soil_decomp_object$.test(metdf=T)
 soil_decomp_object$state_pars$solver_steadystate_out
 soil_decomp_object$state_pars$solver_steadystate_out$y
 soil_decomp_object$.test(metdf=T, ntimes=10 )
+
 soil_decomp_object$.test(metdf=T, litter=6, ntimes=10 )
-soil_decomp_object$.test(metdf=T, litter=1:10 )
+soil_decomp_object$.test(metdf=T, ntimes = 1 )
 
 soil_decomp_object$fnames
 soil_decomp_object$fns$transfer.t1_to_3
@@ -53,6 +55,8 @@ soil_decomp_object$fns$transfermatrix(C=soil_decomp_object$state$cpools)
 soil_decomp_object$fns$DotO
 soil_decomp_object$fns$DotO(soil_decomp_object$state$cpools[,1])
 
+source('soil_decomp_object.R')
+soil_decomp_object$.test_changepool()
 
 source('soil_decomp_object.R')
 system.time(olist <- soil_decomp_object$.test_3pool(ntimes=2))
